@@ -346,4 +346,33 @@ router.patch('/bulk/update', auth, async (req, res) => {
   }
 });
 
+// @route   DELETE api/items/bulk/delete
+// @desc    Bulk delete items
+router.post('/bulk/delete', [auth, checkBoardAccess], async (req, res) => {
+  try {
+    const { itemIds } = req.body;
+    if (!itemIds || !Array.isArray(itemIds) || itemIds.length === 0) {
+      return res.status(400).json({ msg: 'No item IDs provided' });
+    }
+
+    // ONLY Admins, Managers, or the Board Coordinator (req.isCoordinator) can delete items
+    if (req.user.role !== 'Admin' && req.user.role !== 'Manager' && !req.isCoordinator) {
+      return res.status(403).json({ msg: 'Access denied: Only coordinators and admins can delete data.' });
+    }
+
+    await Item.destroy({
+      where: {
+        id: { [Op.in]: itemIds }
+      }
+    });
+
+    res.json({ msg: 'Items removed successfully' });
+  } catch (err) {
+    console.error('[BULK DELETE ERROR]:', err);
+    res.status(500).send('Server error: ' + err.message);
+  }
+});
+
 module.exports = router;
+
+
