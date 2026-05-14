@@ -114,8 +114,7 @@ router.post('/upload', auth, upload.single('file'), async (req, res) => {
     // Determine resource type
     let resourceType = 'raw';
     if (req.file.mimetype.startsWith('image/')) resourceType = 'image';
-    else if (req.file.mimetype.startsWith('video/')) resourceType = 'video';
-    else if (req.file.mimetype.startsWith('audio/')) resourceType = 'audio';
+    else if (req.file.mimetype.startsWith('video/') || req.file.mimetype.startsWith('audio/')) resourceType = 'video';
 
     // Strip extension from public_id — Cloudinary adds extension automatically
     const baseName = req.file.originalname.replace(/\.[^/.]+$/, '');
@@ -166,7 +165,7 @@ router.delete('/:id', auth, async (req, res) => {
         // Determine resource type from mime type
         let resourceType = 'raw';
         if (file.type && file.type.startsWith('image/')) resourceType = 'image';
-        else if (file.type && file.type.startsWith('video/')) resourceType = 'video';
+        else if (file.type && (file.type.startsWith('video/') || file.type.startsWith('audio/'))) resourceType = 'video';
 
         await cloudinary.uploader.destroy(file.cloudinaryId, { resource_type: resourceType });
         console.log(`[FILE DELETE] Deleted from Cloudinary: ${file.cloudinaryId}`);
