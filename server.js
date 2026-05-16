@@ -13,6 +13,7 @@ const allowedOrigins = [
   'https://mondaydotcom.kiaantechnology.com',
   'http://localhost:5173',
   'http://localhost:3000',
+  'https://project-management-system-software.netlify.app',
 ];
 
 app.use(cors({
